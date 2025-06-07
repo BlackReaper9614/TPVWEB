@@ -1,5 +1,5 @@
 
-import { setMessage, onLogout, setModules, clearMessage } from '../../../store';
+import { setMessage, onLogout, setModules, clearMessage, onChecking, onChecked } from '../../../store';
 
 import { TPVAPI } from '../../../apis';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,6 +11,8 @@ export const useModulesStore = () => {
     const dispatch = useDispatch();
 
     const startGetModules = async () => {
+
+        dispatch( onChecking() );
 
         try {
             
@@ -64,6 +66,8 @@ export const useModulesStore = () => {
             }, 10);
 
         }
+
+        dispatch( onChecked() );
 
     }
 

@@ -1,5 +1,5 @@
 import { AppRouter } from './router/AppRouter';
-import { BrowserRouter } from 'react-router';
+import { BrowserRouter } from 'react-router-dom';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { useState, useMemo } from 'react';
 

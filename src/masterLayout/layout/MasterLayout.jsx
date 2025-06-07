@@ -1,17 +1,15 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import { createTheme } from '@mui/material/styles';
-import DescriptionIcon from '@mui/icons-material/Description';
-import CloudCircleIcon from '@mui/icons-material/CloudCircle';
 import { AppProvider } from '@toolpad/core/AppProvider';
+import { createTheme } from '@mui/material/styles';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
-import { useDemoRouter } from '@toolpad/core/internal';
-import { Stack} from '@mui/material';
-import { MasterRoutes } from '../components/MasterRoutes';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { Stack } from '@mui/material';
 import { useModulesStore } from '../../modules/modules/hooks/useModulesStore';
-import { useEffect } from 'react';
+import Box from '@mui/material/Box';
+import CloudCircleIcon from '@mui/icons-material/CloudCircle';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PropTypes from 'prop-types';
+import Typography from '@mui/material/Typography';
+import { Suspense } from 'react';
 
 const demoTheme = createTheme({
     cssVariables: {
@@ -64,66 +62,51 @@ const CustomAppTitle = () => (
         <Typography variant="h6">Mi punto de venta online</Typography>
 
     </Stack>
-    
+
 );
 
 export const MasterLayout = (props) => {
 
-    const { startGetModules, modules } = useModulesStore();
+    const navigate = useNavigate();
 
-    useEffect(() => {
-    
-        startGetModules();
-
-    }, []);
-    
-    const router = useDemoRouter('/home');
+    const { modules } = useModulesStore();
 
     const newModules = modules.map(item => {
 
         return {
-            segment: `/${item.moduleURL}`,
+            segment: item.moduleURL.startsWith('/') ? item.moduleURL.substring(1) : item.moduleURL,
             title: item.moduleName,
-            icon: <DescriptionIcon />
+            icon: <DescriptionIcon />,
+            onclick: () => {
+                // Navegación controlada por React Router
+                const normalizedPath = item.moduleURL.replace(/^\/+/, '');
+                navigate(`/${normalizedPath}`);
+            }
         }
 
     })
 
     return (
 
-        <AppProvider
-            // navigation={[
-            //     {
-            //         segment: 'home',
-            //         title: 'Home',
-            //         icon: <DescriptionIcon />,
-            //     },
-            //     {
-            //         segment: 'about',
-            //         title: 'About Us',
-            //         icon: <DescriptionIcon />,
-            //     },
-            // ]}
+        <AppProvider navigation={newModules} theme={demoTheme}>
 
-            navigation={newModules}
+            <DashboardLayout slots={{ appTitle: CustomAppTitle }}>
 
-            router={router}
-            theme={demoTheme}
-        // window={demoWindow}
-        >
-            <DashboardLayout 
-                slots={{
-                    appTitle: CustomAppTitle
-                }}
-            >
+                {/* Asegúrate que el Outlet esté en el área de contenido principal */}
+                <div className="content-area">
 
-                <MasterRoutes modules={ modules } />
+                    <Suspense fallback={<div>XD</div>}>
 
-                {/* <DemoPageContent pathname={router.pathname} /> */}
+                        <Outlet /> {/* Esto renderizará Ventas, Artículos, etc. */}
+
+                    </Suspense>
+
+                </div>
 
             </DashboardLayout>
 
         </AppProvider>
 
     );
+
 }
