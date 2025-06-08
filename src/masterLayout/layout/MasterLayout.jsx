@@ -82,6 +82,7 @@ export const MasterLayout = (props) => {
                 const normalizedPath = item.moduleURL.replace(/^\/+/, '');
                 navigate(`/${normalizedPath}`);
             }
+            
         }
 
     })

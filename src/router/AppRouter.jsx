@@ -38,9 +38,13 @@ export const AppRouter = () => {
             {
                 (status === 'not-authenticated')
                     ?
+                        <>
 
-                    <Route path="/Auth/*" element={<Login />} />
+                            <Route path='/*' element={<Login />} />
+                            
+                            <Route path="/Auth/*" element={<Login />} />
 
+                        </>
                     :
                     (
 
@@ -48,30 +52,32 @@ export const AppRouter = () => {
 
                             {/* Mapeo dinámico de módulos */}
                             {
+ 
+                                modules.length > 0 &&
 
-                                modules.map(({ idModule, moduleName, moduleURL }) => {
-
-                                    const Component = modulesMap[moduleName];
-
-                                    if (!Component) {
-
-                                        // console.log('Retorno null con=', moduleName);
-
-                                        return null;
-
-                                    }
-
-                                    // console.log('Retorno el componente=', moduleName, 'con la ruta = ', moduleURL);
-
-                                    return (
-                                        <Route
+                                    modules.map(({ idModule, moduleName, moduleURL }) => {
+                                        
+                                        const Component = modulesMap[moduleName];
+                                        
+                                        if (!Component) {
+                                            
+                                            // console.log('Retorno null con=', moduleName);
+                                            
+                                            return null;
+                                            
+                                        }
+                                        
+                                        // console.log('Retorno el componente=', moduleName, 'con la ruta = ', moduleURL);
+                                        
+                                        return (
+                                            <Route
                                             key={idModule}
                                             path={`${moduleURL.replace(/^\/+/, '')}/*`}
                                             element={<Component />}
-                                        />
-                                    );
-
-                                })
+                                            />
+                                        );
+                                        
+                                    })
 
                             }
 
