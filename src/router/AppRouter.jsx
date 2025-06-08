@@ -53,31 +53,29 @@ export const AppRouter = () => {
                             {/* Mapeo dinámico de módulos */}
                             {
  
-                                modules.length > 0 &&
-
-                                    modules.map(({ idModule, moduleName, moduleURL }) => {
+                                modules.map(({ idModule, moduleName, moduleURL }) => {
+                                    
+                                    const Component = modulesMap[moduleName];
+                                    
+                                    if (!Component) {
                                         
-                                        const Component = modulesMap[moduleName];
+                                        // console.log('Retorno null con=', moduleName);
                                         
-                                        if (!Component) {
-                                            
-                                            // console.log('Retorno null con=', moduleName);
-                                            
-                                            return null;
-                                            
-                                        }
+                                        return null;
                                         
-                                        // console.log('Retorno el componente=', moduleName, 'con la ruta = ', moduleURL);
-                                        
-                                        return (
-                                            <Route
-                                            key={idModule}
-                                            path={`${moduleURL.replace(/^\/+/, '')}/*`}
-                                            element={<Component />}
-                                            />
-                                        );
-                                        
-                                    })
+                                    }
+                                    
+                                    // console.log('Retorno el componente=', moduleName, 'con la ruta = ', moduleURL);
+                                    
+                                    return (
+                                        <Route
+                                        key={idModule}
+                                        path={`${moduleURL.replace(/^\/+/, '')}/*`}
+                                        element={<Component />}
+                                        />
+                                    );
+                                    
+                                })
 
                             }
 
