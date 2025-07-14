@@ -11,22 +11,6 @@ import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import { Suspense } from 'react';
 
-const demoTheme = createTheme({
-    cssVariables: {
-        colorSchemeSelector: 'data-toolpad-color-scheme',
-    },
-    colorSchemes: { light: true, dark: true },
-    breakpoints: {
-        values: {
-            xs: 0,
-            sm: 600,
-            md: 600,
-            lg: 1200,
-            xl: 1536,
-        },
-    },
-});
-
 const DemoPageContent = ({ pathname }) => {
 
     return (
@@ -80,33 +64,33 @@ export const MasterLayout = (props) => {
             onclick: () => {
                 // Navegación controlada por React Router
                 const normalizedPath = item.moduleURL.replace(/^\/+/, '');
-                navigate(`/${normalizedPath}`);
+                navigate(`/${normalizedPath}/\*`);
             }
-            
+
         }
 
     })
 
     return (
 
-        <AppProvider navigation={newModules} theme={demoTheme}>
+        <div className="content-area">
+            
+            {/* Asegúrate que el Outlet esté en el área de contenido principal */}
+            <Suspense fallback={<div>XD</div>}>
 
-            <DashboardLayout slots={{ appTitle: CustomAppTitle }}>
+                <AppProvider navigation={newModules} >
 
-                {/* Asegúrate que el Outlet esté en el área de contenido principal */}
-                <div className="content-area">
-
-                    <Suspense fallback={<div>XD</div>}>
+                    <DashboardLayout slots={{ appTitle: CustomAppTitle }}>
 
                         <Outlet /> {/* Esto renderizará Ventas, Artículos, etc. */}
 
-                    </Suspense>
+                    </DashboardLayout>
 
-                </div>
+                </AppProvider>
 
-            </DashboardLayout>
+            </Suspense>
 
-        </AppProvider>
+        </div>
 
     );
 

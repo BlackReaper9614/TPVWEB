@@ -6,7 +6,6 @@ import { useLoginStore } from '../modules/login/hooks/useLoginStore';
 import { useEffect } from 'react';
 import { useModulesStore } from '../modules/modules/hooks/useModulesStore';
 import { Items } from '../modules/items/pages/Items';
-import { Sales } from '../modules/sales/pages/Sales';
 import { modulesMap } from './modulesMap';
 
 export const AppRouter = () => {
