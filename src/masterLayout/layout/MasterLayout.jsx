@@ -1,5 +1,4 @@
 import { AppProvider } from '@toolpad/core/AppProvider';
-import { createTheme } from '@mui/material/styles';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { Stack } from '@mui/material';

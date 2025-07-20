@@ -1,7 +1,17 @@
-import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditSquareIcon from '@mui/icons-material/EditSquare';
+
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    Switch,
+} from '@mui/material';
 
 import {
     createColumnHelper,
@@ -9,7 +19,10 @@ import {
     getCoreRowModel,
     useReactTable,
 } from '@tanstack/react-table'
-import { Box, Container, Table, TableBody, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+
+import { Box, Container, IconButton, Table, TableBody, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useItemsStore } from '../hooks/useItemsStore';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -21,80 +34,96 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     },
 }));
 
-const person = {
-    firstName: '',
-    lastName: '',
-    age: 0,
-    visits: 0,
-    status: '',
-    progress: 0
-}
-
-const defaultData = [
-    {
-        firstName: 'tanner',
-        lastName: 'linsley',
-        age: 24,
-        visits: 100,
-        status: 'In Relationship',
-        progress: 50,
-    },
-    {
-        firstName: 'tandy',
-        lastName: 'miller',
-        age: 40,
-        visits: 40,
-        status: 'Single',
-        progress: 80,
-    },
-    {
-        firstName: 'joe',
-        lastName: 'dirte',
-        age: 45,
-        visits: 20,
-        status: 'Complicated',
-        progress: 10,
-    },
-]
-
 const columnHelper = createColumnHelper();
-
-const columns = [
-    columnHelper.accessor('firstName', {
-        cell: info => info.getValue(),
-        footer: info => info.column.id,
-    }),
-    columnHelper.accessor(row => row.lastName, {
-        id: 'lastName',
-        cell: info => <i>{info.getValue()}</i>,
-        header: () => <span>Last Name</span>,
-        footer: info => info.column.id,
-    }),
-    columnHelper.accessor('age', {
-        header: () => 'Age',
-        cell: info => info.renderValue(),
-        footer: info => info.column.id,
-    }),
-    columnHelper.accessor('visits', {
-        header: () => <span>Visits</span>,
-        footer: info => info.column.id,
-    }),
-    columnHelper.accessor('status', {
-        header: 'Status',
-        footer: info => info.column.id,
-    }),
-    columnHelper.accessor('progress', {
-        header: 'Profile Progress',
-        footer: info => info.column.id,
-    }),
-];
 
 export const Items = () => {
 
-    const [data, _setData] = React.useState(() => [...defaultData]);
+    const { items: defaultData, getItemsByUser } = useItemsStore();
+
+    useEffect(() => {
+
+        getItemsByUser();
+
+    }, [])
+
+    const [data, setData] = useState(() => [...defaultData]);
+
+    const [deleteIndex, setDeleteIndex] = useState(null);
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const handleDeleteConfirm = () => {
+
+        setData((prev) => prev.filter((_, i) => i !== deleteIndex));
+
+        setIsDialogOpen(false);
+
+        setDeleteIndex(null);
+
+    };
+
+    const handleDeleteClick = (index) => {
+
+        setDeleteIndex(index);
+
+        setIsDialogOpen(true);
+
+    };
+
+    const handleDialogClose = () => {
+
+        setIsDialogOpen(false);
+
+        setDeleteIndex(null);
+
+    }
+
+    const onChangeStatus = (event, id) => {
+
+        console.log(event.target.checked, id);
+        
+    }
+
+    const columns = [
+        columnHelper.accessor('idItem', {
+            header: 'ID',
+            footer: info => info.column.idItem,
+            cell: info => info.row.original.idItem,
+        }),
+        columnHelper.accessor('itemName', {
+            header: 'Nombre',
+            footer: info => info.column.itemName,
+            cell: info => info.row.original.itemName, // esto accede al JSX directamente
+        }),
+        columnHelper.accessor('edit', {
+            header: 'Editar',
+            footer: info => info.column.id,
+            cell: () => (
+
+                <IconButton>
+
+                    <EditSquareIcon />
+
+                </IconButton>
+
+            )
+        }),
+        columnHelper.display({
+            id: 'delete',
+            header: 'Borrar',
+            cell: ({ row }) => (
+
+                row.original.idStatus == 1 ?
+                    <Switch defaultChecked  onChange={ () => onChangeStatus(event, row.original.idItem)} />
+                :
+                    <Switch />
+                
+            )
+        }),
+    ];
 
     const table = useReactTable({
-        data,
+        data: defaultData,
         columns,
         getCoreRowModel: getCoreRowModel(),
     });
@@ -120,22 +149,44 @@ export const Items = () => {
 
                         <TableHead>
 
-                            <TableRow>
+                            {
+                                table.getHeaderGroups().map(headerGroup => (
 
-                                <StyledTableCell align='center'> Nombre </StyledTableCell>
-                                <StyledTableCell align='center'> Precio </StyledTableCell>
-                                <StyledTableCell align='center'> Tipo </StyledTableCell>
-                                <StyledTableCell align='center'> Relación </StyledTableCell>
-                                <StyledTableCell align='center'> Estatus </StyledTableCell>
-                                <StyledTableCell align='center'> Visitas </StyledTableCell>
+                                    <TableRow key={headerGroup.id}>
 
-                            </TableRow>
+                                        {
+
+                                            headerGroup.headers.map(header => (
+
+                                                <StyledTableCell align='center' key={header.id}>
+                                                    
+                                                    {
+                                                        flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )
+                                                    }
+
+                                                </StyledTableCell>
+
+                                            ))
+
+                                        }
+
+                                    </TableRow>
+
+                                ))
+
+                            }
 
                         </TableHead>
 
                         <TableBody>
 
                             {
+
+
+
                                 table.getRowModel().rows.map(row => (
 
                                     <TableRow key={row.id}>
@@ -171,6 +222,26 @@ export const Items = () => {
                 </TableContainer>
 
             </Box>
+
+            <Dialog open={isDialogOpen} onClose={handleDialogClose}>
+
+                <DialogTitle>Confirmar eliminación</DialogTitle>
+
+                <DialogContent>
+                    ¿Estás seguro de que deseas eliminar este elemento?
+                </DialogContent>
+
+                <DialogActions>
+
+                    <Button onClick={handleDialogClose}>Cancelar</Button>
+
+                    <Button onClick={handleDeleteConfirm} color="error" variant="contained">
+                        Eliminar
+                    </Button>
+
+                </DialogActions>
+
+            </Dialog>
 
         </Container>
 
