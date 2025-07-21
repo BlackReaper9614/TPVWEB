@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setItems } from '../../../store/items/itemsSlice';
+import { onChangeItemStatus, setItems } from '../../../store/items/itemsSlice';
 import { onChecking, onChecked, onLogout, setMessage, clearMessage } from '../../../store/login/loginSlice';
 import { TPVAPI } from "../../../apis";
 
@@ -69,9 +69,72 @@ export const useItemsStore = () => {
 
     }
 
+    const changeItemStatus = async ( idItem, status) => {
+
+        const idStatus = status ? 1 : 2;
+
+        dispatch( onChecking() );
+
+        try {
+            
+            const requestHeader = JSON.parse(localStorage.getItem('currentUser')) || {};
+
+            if (!requestHeader.authToken) {
+
+                return dispatch(onLogout());
+
+            }
+
+            const { data } = await TPVAPI.post(`/Items/ChangeItemStatus?idUser=${requestHeader.idUser}&idItem=${idItem}&idStatus=${idStatus}`);
+            
+            if(!data){
+
+                const message = {
+                    title: 'Error al cambiar el estatus del artículo',
+                    text: `No fue posible cambiar el estatus del artículo, Error = ${ex.message}`,
+                    icon: 'warning'
+                }
+
+                dispatch( setMessage( message ) );
+
+                setTimeout( () => {
+    
+                    dispatch( clearMessage() );
+    
+                }, 10);
+
+            }else{
+
+                dispatch( onChangeItemStatus({ idItem, idStatus}) );
+
+            }
+
+        } catch (ex) {
+         
+            const message = {
+                title: 'Error al cambiar el estatus del artículo',
+                text: `No fue posible cambiar el estatus del artículo, favor de intentalor más tarde, error = ${ex.message}`,
+                icon: 'error'
+            }
+
+            dispatch( setMessage( message ) );
+
+            setTimeout( () => {
+
+                dispatch( clearMessage() );
+
+            }, 10);
+
+        }
+
+        dispatch( onChecked() );
+
+    }
+
     return {
         //Methods
         getItemsByUser,
+        changeItemStatus,
 
         //Propierties
         items

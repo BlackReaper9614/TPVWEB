@@ -1,25 +1,9 @@
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import DeleteIcon from '@mui/icons-material/Delete';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
-
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    Switch,
-} from '@mui/material';
-
-import {
-    createColumnHelper,
-    flexRender,
-    getCoreRowModel,
-    useReactTable,
-} from '@tanstack/react-table'
-
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Switch } from '@mui/material';
+import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { Box, Container, IconButton, Table, TableBody, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useItemsStore } from '../hooks/useItemsStore';
@@ -38,7 +22,7 @@ const columnHelper = createColumnHelper();
 
 export const Items = () => {
 
-    const { items: defaultData, getItemsByUser } = useItemsStore();
+    const { items: defaultData, getItemsByUser, changeItemStatus } = useItemsStore();
 
     useEffect(() => {
 
@@ -80,7 +64,7 @@ export const Items = () => {
 
     const onChangeStatus = (event, id) => {
 
-        console.log(event.target.checked, id);
+        changeItemStatus(id, event.target.checked);
         
     }
 
@@ -114,9 +98,14 @@ export const Items = () => {
             cell: ({ row }) => (
 
                 row.original.idStatus == 1 ?
-                    <Switch defaultChecked  onChange={ () => onChangeStatus(event, row.original.idItem)} />
+                    <Switch 
+                        defaultChecked  
+                        onChange={ (event) => onChangeStatus(event, row.original.idItem) } 
+                    />
                 :
-                    <Switch />
+                    <Switch 
+                        onChange={ (event) => onChangeStatus(event, row.original.idItem) } 
+                    />
                 
             )
         }),

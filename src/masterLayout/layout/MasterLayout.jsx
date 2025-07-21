@@ -1,7 +1,7 @@
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Stack } from '@mui/material';
+import { Backdrop, CircularProgress, Stack } from '@mui/material';
 import { useModulesStore } from '../../modules/modules/hooks/useModulesStore';
 import Box from '@mui/material/Box';
 import CloudCircleIcon from '@mui/icons-material/CloudCircle';
@@ -9,6 +9,9 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import { Suspense } from 'react';
+import { useLoginStore } from '../../modules/login/hooks/useLoginStore';
+import { useEffect } from 'react';
+import Swal from 'sweetalert2';
 
 const DemoPageContent = ({ pathname }) => {
 
@@ -50,6 +53,8 @@ const CustomAppTitle = () => (
 
 export const MasterLayout = (props) => {
 
+    const { isLoading, message } = useLoginStore();
+
     const navigate = useNavigate();
 
     const { modules } = useModulesStore();
@@ -68,12 +73,30 @@ export const MasterLayout = (props) => {
 
         }
 
-    })
+    });
+
+    useEffect(() => {
+
+        if (message !== undefined) {
+
+            Swal.fire(`${message.title}`, `${message.text}`, `${message.icon}`)
+
+        }
+
+    }, [message]);
 
     return (
 
         <div className="content-area">
-            
+
+            <Backdrop
+                sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+                open={isLoading}
+            >
+                <CircularProgress color="inherit" />
+
+            </Backdrop>
+
             {/* Asegúrate que el Outlet esté en el área de contenido principal */}
             <Suspense fallback={<div>XD</div>}>
 

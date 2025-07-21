@@ -10,7 +10,6 @@ import WavingHandIcon from '@mui/icons-material/WavingHand';
 import { useEffect, useState } from 'react';
 import { useLoginStore } from '../hooks/useLoginStore';
 import Swal from 'sweetalert2';
-import { lightGreen } from '@mui/material/colors';
 
 const providers = [{ id: 'credentials', name: 'Credentials' }];
 
