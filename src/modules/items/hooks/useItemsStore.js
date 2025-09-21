@@ -81,7 +81,7 @@ export const useItemsStore = () => {
 
             if (!requestHeader.authToken) {
 
-                return dispatch(onLogout());
+                return dispatch( onLogout() );
 
             }
 
@@ -128,6 +128,31 @@ export const useItemsStore = () => {
         }
 
         dispatch( onChecked() );
+
+    }
+
+    const startGetItemsByParams = async( parameterType, searchParameters) => {
+
+        try {
+            
+            dispatch( onChecking() );
+
+            const requestHeader = JSON.parse(localStorage.getItem('currentUser')) || {};
+
+            if (!requestHeader.authToken) {
+
+                return dispatch( onLogout() );
+
+            }
+
+
+        } catch (ex) {
+            
+
+        } finally {
+
+
+        }
 
     }
 

@@ -1,18 +1,22 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { onChecking, onChecked, onLogin,  onLogout, clearMessage } from '../../../store/index';
+import { clearAlertMessage, onLogin,  onLogout, setAlertMessage, setIsLoadingbar } from '../../../store/index';
 import { TPVAPI } from '../../../apis';
 
 export const useLoginStore = () => {
 
-    const { status, user, message, isLoading, selectedBranch, selectedModule } = useSelector(state => state.login);
+    const { status, user, selectedBranch } = useSelector(state => state.login);
+
+    const { message } = useSelector(state => state.alertMessage);
+
+    const { isLoading } = useSelector(state => state.loadingbar);
 
     const dispatch = useDispatch();
 
     const startLogin = async ( user, password ) => {
 
-        dispatch( onChecking() );
-
         try {
+
+            dispatch( setIsLoadingbar(true) );
 
             const requestHeader = {
                 userName: user,
@@ -25,29 +29,27 @@ export const useLoginStore = () => {
 
             localStorage.setItem('currentUser', JSON.stringify(data) );
 
-            dispatch( onChecked() );
-
         } catch (ex) {
             
             localStorage.clear();
 
             const message = {
                 title: 'Error de autenticación',
-                text: `Credenciales no validas, Error = ${ex.message}`,
+                text: `Las credenciales no son validas, Error = ${ex.message}`,
                 icon: 'warning'
             }
 
-            dispatch( onChecked() );
-
-            console.log('Entro a este log')
-
-            dispatch( onLogout( message ) );
+            dispatch( setAlertMessage( message ) );
 
             setTimeout( () => {
 
-                dispatch( clearMessage() )
+                dispatch( clearAlertMessage() )
 
             }, 10); 
+
+        } finally {
+
+            dispatch( setIsLoadingbar(false) );
 
         }
 
@@ -61,7 +63,8 @@ export const useLoginStore = () => {
 
             if(!requestHeader.authToken){
 
-                return dispatch( onLogout() );
+                // Se hace solo el logout, ya que nunca existio sesión
+                dispatch( onLogout() );
 
             }
 
@@ -73,6 +76,8 @@ export const useLoginStore = () => {
 
         } catch (ex) {
             
+            dispatch( onLogout() );
+            
             localStorage.clear();
 
             const message = {
@@ -81,7 +86,7 @@ export const useLoginStore = () => {
                 icon: 'warning'
             }
 
-            dispatch( onLogout( message ) );
+            dispatch( setAlertMessage( message ) );
 
             setTimeout( () => {
 
@@ -89,13 +94,11 @@ export const useLoginStore = () => {
 
             }, 10);
 
+        } finally {
+
+            dispatch( setIsLoadingbar(false) );
+
         }
-
-    }
-
-    const startCleanMessage = async () => {
-
-        dispatch( clearMessage() );
 
     }
 
@@ -104,13 +107,12 @@ export const useLoginStore = () => {
         status,
         user,
         message,
-        isLoading,
         selectedBranch,
+        isLoading,
 
         //Methods
         startLogin,
         checkAuthUser,
-        startCleanMessage,
     }
 
 }
