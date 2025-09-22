@@ -14,7 +14,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 
-export const CustomTable = ({ columns, data }) => {
+export const CustomTable = ({ columns, data, listSize, currentPage, handleChangePaginator }) => {
 
     const table = useReactTable({
         data,
@@ -68,10 +68,6 @@ export const CustomTable = ({ columns, data }) => {
 
                                     }
 
-
-
-
-
                                 </TableRow>
 
                             ))
@@ -86,7 +82,7 @@ export const CustomTable = ({ columns, data }) => {
 
                             table.getRowModel().rows.map(row => (
 
-                                <TableRow>
+                                <TableRow key={row.id}>
 
                                     {
 
@@ -96,7 +92,7 @@ export const CustomTable = ({ columns, data }) => {
 
                                                 {
 
-                                                    flexRender(cell.column.columnDef.cell.getContext())
+                                                    flexRender(cell.column.columnDef.cell, cell.getContext() )
 
                                                 }
 
@@ -124,7 +120,15 @@ export const CustomTable = ({ columns, data }) => {
                 }}
             >
 
-                <Pagination count={10} variant="outlined" color="primary" />
+                <Pagination 
+                    color="primary" 
+                    count={listSize} 
+                    defaultPage={1}
+                    onChange={ handleChangePaginator }
+                    page={ currentPage }
+                    siblingCount={ 0 }
+                    variant="outlined" 
+                />
 
             </Box>
 

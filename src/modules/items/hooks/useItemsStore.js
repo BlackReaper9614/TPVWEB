@@ -1,17 +1,16 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { onChangeItemStatus, setItems } from '../../../store/items/itemsSlice';
-import { onChecking, onChecked, onLogout, setMessage, clearMessage } from '../../../store/login/loginSlice';
+import { onLogout, setAlertMessage, clearAlertMessage, setIsLoadingbar, setItems, onChangeItemStatus, setItemsListSize } from '../../../store';
 import { TPVAPI } from "../../../apis";
 
 export const useItemsStore = () => {
 
-    const { items } = useSelector(state => state.items);
+    const { items, itemsListSize, itemsListCurrentPage } = useSelector(state => state.items);
 
     const dispatch = useDispatch();
 
     const getItemsByUser = async () => {
 
-        dispatch(onChecking());
+        dispatch( setIsLoadingbar(true) );
 
         try {
 
@@ -19,7 +18,7 @@ export const useItemsStore = () => {
 
             if (!requestHeader.authToken) {
 
-                return dispatch(onLogout());
+                return dispatch( onLogout() );
 
             }
 
@@ -37,11 +36,11 @@ export const useItemsStore = () => {
                     icon: 'warning'
                 }
 
-                dispatch(setMessage(message));
+                dispatch( setAlertMessage(message) );
 
                 setTimeout(() => {
 
-                    dispatch(clearMessage());
+                    dispatch( clearAlertMessage() );
 
                 }, 10);
 
@@ -55,27 +54,31 @@ export const useItemsStore = () => {
                 icon: 'warning'
             }
 
-            dispatch( setMessage( message ) );
+            dispatch( setAlertMessage( message ) );
 
             setTimeout( () => {
 
-                dispatch( clearMessage() );
+                dispatch( clearAlertMessage() );
 
             }, 10);
 
-        }
+        } finally {
 
-        dispatch(onChecked());
+            dispatch( setIsLoadingbar(false));
+            
+        }
 
     }
 
     const changeItemStatus = async ( idItem, status) => {
 
-        const idStatus = status ? 1 : 2;
-
-        dispatch( onChecking() );
-
+        
+        
         try {
+
+            const idStatus = status ? 1 : 2;
+
+            dispatch( setIsLoadingbar(true) );
             
             const requestHeader = JSON.parse(localStorage.getItem('currentUser')) || {};
 
@@ -95,11 +98,11 @@ export const useItemsStore = () => {
                     icon: 'warning'
                 }
 
-                dispatch( setMessage( message ) );
+                dispatch( setAlertMessage( message ) );
 
                 setTimeout( () => {
     
-                    dispatch( clearMessage() );
+                    dispatch( clearAlertMessage() );
     
                 }, 10);
 
@@ -117,40 +120,69 @@ export const useItemsStore = () => {
                 icon: 'error'
             }
 
-            dispatch( setMessage( message ) );
+            dispatch( setAlertMessage( message ) );
 
             setTimeout( () => {
 
-                dispatch( clearMessage() );
+                dispatch( clearAlertMessage() );
 
             }, 10);
 
-        }
+        } finally {
+            
+            dispatch( setIsLoadingbar(false) );
 
-        dispatch( onChecked() );
+        }
 
     }
 
-    const startGetItemsByParams = async( parameterType, searchParameters) => {
+    const startGetItemsByParams = async(searchParams) => {
 
         try {
             
-            dispatch( onChecking() );
+            dispatch( setIsLoadingbar(true) );
 
             const requestHeader = JSON.parse(localStorage.getItem('currentUser')) || {};
 
             if (!requestHeader.authToken) {
-
+                
                 return dispatch( onLogout() );
+                
+            }
+
+            searchParams.idUser = requestHeader.idUser;
+
+            const { data } = await TPVAPI.post(`/Items/GetItemsByParams`, searchParams)
+
+            if(data.length > 0){
+
+                const totalPages = Math.ceil( parseInt(data[0].totalRows) / searchParams.pageSize )
+
+                dispatch( setItemsListSize(totalPages) );
 
             }
 
+            dispatch( setItems(data) );
 
         } catch (ex) {
             
+            const message = {
+                title: 'Error',
+                text: `Error al obtener los artículos, Error = ${ex.message}`,
+                icon: 'error'
+            }
+
+            dispatch( setAlertMessage(message) );
+
+            setTimeout(() => {
+                
+                dispatch( clearAlertMessage() );
+
+            }, 10);
 
         } finally {
 
+            dispatch( setIsLoadingbar(false) );
 
         }
 
@@ -160,9 +192,12 @@ export const useItemsStore = () => {
         //Methods
         getItemsByUser,
         changeItemStatus,
+        startGetItemsByParams,
 
         //Propierties
-        items
+        items,
+        itemsListSize,
+        itemsListCurrentPage,
     }
 
 }

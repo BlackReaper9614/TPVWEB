@@ -3,7 +3,9 @@ import { createSlice } from '@reduxjs/toolkit';
 export const itemsSlice = createSlice({
     name: 'items',
     initialState: {
-        items: []
+        items: [],
+        itemsListSize: 0,
+        itemsListCurrentPage: 0
     },
     reducers: {
         setItems: ( state, { payload } ) => {
@@ -26,9 +28,19 @@ export const itemsSlice = createSlice({
                 item.idItem === payload.idItem ? payload : item
             );
 
-        }
+        },
+        setItemsListSize: (state, { payload }) => {
+
+            state.itemsListSize = payload;
+
+        },
+        setItemsListCurrentPage: (state, { payload }) => {
+
+            state.itemsListCurrentPage = payload;
+
+        },
     }
 });
 
 // Action creators are generated for each case reducer function
-export const { setItems, onChangeItemStatus, onUpdateItem } = itemsSlice.actions;
+export const { setItems, onChangeItemStatus, onUpdateItem, setItemsListSize, setItemsListCurrentPage } = itemsSlice.actions;

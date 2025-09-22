@@ -10,7 +10,7 @@ export const alertMessageSlice = createSlice({
             state.message = payload;
         },
         clearAlertMessage: (state) => {
-            state.message = null;
+            state.message = undefined;
         },
     }
 });

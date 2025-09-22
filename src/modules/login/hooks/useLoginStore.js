@@ -64,7 +64,7 @@ export const useLoginStore = () => {
             if(!requestHeader.authToken){
 
                 // Se hace solo el logout, ya que nunca existio sesión
-                dispatch( onLogout() );
+                return dispatch( onLogout() );
 
             }
 
@@ -90,7 +90,7 @@ export const useLoginStore = () => {
 
             setTimeout( () => {
 
-                dispatch( clearMessage() );
+                dispatch( clearAlertMessage() );
 
             }, 10);
 

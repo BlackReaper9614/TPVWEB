@@ -1,18 +1,27 @@
 import { Box, Typography } from '@mui/material';
 import { CustomTable } from '../../components/CustomTable';
 import { createColumnHelper } from '@tanstack/react-table';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useItemsStore } from '../hooks/useItemsStore';
 
 const columnHelper = createColumnHelper();
 
+const searchParamsInitial = {
+    parameterType: 0,
+    searchParameters: '',
+    currentPage: 1,
+    pageSize: 10
+};
+
 export const Items = () => {
+    
+    const { startGetItemsByParams, items, itemsListSize } = useItemsStore();
+
+    const [searchParams, setsearchParams] = useState(searchParamsInitial);
 
     useEffect(() => {
         
-        const searchParams = {
-            parameterType: 0,
-            searchParameter: ''
-        };
+        startGetItemsByParams(searchParams);
 
     }, [] );
 
@@ -54,6 +63,28 @@ export const Items = () => {
         }),
     ]
 
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const onSubmitSearch = (event, page = currentPage) => {
+        
+        event.preventDefault();
+
+        setsearchParams( {...searchParams, currentPage: page });
+
+        startGetItemsByParams(searchParams);
+
+        console.log(searchParams);
+
+    }
+
+    const handleChangePaginator = (event, value = 1) => {
+
+        setCurrentPage(value);
+
+        onSubmitSearch(event, value);
+
+    }
+
     return (
 
         <Box
@@ -75,7 +106,13 @@ export const Items = () => {
                 Lista de artículos
             </Typography>
 
-            <CustomTable columns={columns} data={[]} />
+            <CustomTable 
+                columns={ columns }
+                data={ items }
+                listSize={ itemsListSize }
+                currentPage={ currentPage }
+                handleChangePaginator={ handleChangePaginator } 
+            />
 
         </Box>
 

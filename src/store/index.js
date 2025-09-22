@@ -7,3 +7,5 @@ export * from './modules/modulesSlice';
 export * from './alertMessage/alertMessageSlice';
 
 export * from './loadingbar/loadingbarSlice';
+
+export * from './items/itemsSlice';
