@@ -1,8 +1,10 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { CustomTable } from '../../components/CustomTable';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
 import { useItemsStore } from '../hooks/useItemsStore';
+import AddIcon from '@mui/icons-material/Add';
+import { CrudItem } from '../components/CrudItem';
 
 const columnHelper = createColumnHelper();
 
@@ -14,16 +16,16 @@ const searchParamsInitial = {
 };
 
 export const Items = () => {
-    
+
     const { startGetItemsByParams, items, itemsListSize } = useItemsStore();
 
     const [searchParams, setsearchParams] = useState(searchParamsInitial);
 
     useEffect(() => {
-        
+
         startGetItemsByParams(searchParams);
 
-    }, [] );
+    }, []);
 
     const columns = [
         columnHelper.accessor('idItem', {
@@ -66,10 +68,10 @@ export const Items = () => {
     const [currentPage, setCurrentPage] = useState(1);
 
     const onSubmitSearch = (event, page = currentPage) => {
-        
+
         event.preventDefault();
 
-        setsearchParams( {...searchParams, currentPage: page });
+        setsearchParams({ ...searchParams, currentPage: page });
 
         startGetItemsByParams(searchParams);
 
@@ -85,38 +87,72 @@ export const Items = () => {
 
     }
 
+    const [openCrudItem, setopenCrudItem] = useState(false)
+
     return (
 
-        <Box
-            sx={{
-                //border: 'solid 1px blue',
-                //margin: '2%',
-                padding: '2%'
-            }}
-        >
+        <>
 
-        <Box>
-
-            <Typography 
-                sx={{
-                    mb:'2%'
-                }}
-                variant="h5"
-            >
-                Lista de artículos
-            </Typography>
-
-            <CustomTable 
-                columns={ columns }
-                data={ items }
-                listSize={ itemsListSize }
-                currentPage={ currentPage }
-                handleChangePaginator={ handleChangePaginator } 
+            {/* Modal para manipular items */}
+            <CrudItem 
+                handleClose={ setopenCrudItem } 
+                open={ openCrudItem } 
             />
 
-        </Box>
+            <Box
+            
+                sx={{
+                    padding: '2%'
+                }}
+            >
 
-        </Box>
+                <Box>
+
+                    <Box
+                        display="flex"
+                        justifyContent="space-between" // uno al inicio y otro al final
+                        alignItems="center"
+                        p={2}
+                        height={100}
+                    >
+
+                        <Typography
+                            sx={{
+                                mb: '2%',
+                                alignItems: 'center'
+                            }}
+                            variant="h5"
+                        >
+                            Lista de artículos
+                        </Typography>
+
+                        <Button
+                            onClick={ () => setopenCrudItem(true) }
+                            size='small'
+                            variant='contained'
+                        >
+
+                            <AddIcon />
+
+                            Nuevo artículo
+
+                        </Button>
+
+                    </Box>
+
+                    <CustomTable
+                        columns={columns}
+                        data={items}
+                        listSize={itemsListSize}
+                        currentPage={currentPage}
+                        handleChangePaginator={handleChangePaginator}
+                    />
+
+                </Box>
+
+            </Box>
+
+        </>
 
     )
 

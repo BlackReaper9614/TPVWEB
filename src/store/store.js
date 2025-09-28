@@ -5,6 +5,8 @@ import { itemsSlice } from './items/itemsSlice';
 import { loadingbarSlice } from './loadingbar/loadingbarSlice';
 import { loginSlice } from './login/loginSlice';
 import { modulesSlice } from './modules/modulesSlice';
+import { unitMeasuresSlice } from './unitMeasures/unitMeasuresSlice';
+import { familiesSlice } from './families/familiesSlice';
 
 export const store = configureStore({  
     reducer: {
@@ -12,6 +14,8 @@ export const store = configureStore({
         loadingbar: loadingbarSlice.reducer,
         login: loginSlice.reducer,
         modules: modulesSlice.reducer,
-        items: itemsSlice.reducer
+        items: itemsSlice.reducer,
+        unitMeasures: unitMeasuresSlice.reducer,
+        families: familiesSlice.reducer,
     }
 });

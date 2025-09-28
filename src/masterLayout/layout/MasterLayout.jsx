@@ -102,7 +102,12 @@ export const MasterLayout = (props) => {
 
                 <AppProvider navigation={newModules} >
 
-                    <DashboardLayout slots={{ appTitle: CustomAppTitle }}>
+                    <DashboardLayout 
+                        defaultSidebarCollapsed
+                        slots={{ 
+                            appTitle: CustomAppTitle
+                        }}
+                    >
 
                         <Outlet /> {/* Esto renderizará Ventas, Artículos, etc. */}
 

@@ -5,8 +5,8 @@ import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-tabl
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: theme.palette.common.black,
-        color: theme.palette.common.white,
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.getContrastText(theme.palette.primary.main),
     },
     [`&.${tableCellClasses.body}`]: {
         fontSize: 14,

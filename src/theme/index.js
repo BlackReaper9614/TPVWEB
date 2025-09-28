@@ -19,9 +19,9 @@ export const lighTheme = createTheme({
 export const darkTheme = createTheme({
     palette: {
         mode: 'dark',
-        // primary: {
-        //     main: '#90caf9', // Azul claro para contraste
-        // },
+        primary: {
+            main: '#90caf9', // Azul claro para contraste
+        },
         // secondary: {
         //     main: '#f48fb1', // Rosa claro
         // },
