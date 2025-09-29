@@ -7,6 +7,7 @@ import { loginSlice } from './login/loginSlice';
 import { modulesSlice } from './modules/modulesSlice';
 import { unitMeasuresSlice } from './unitMeasures/unitMeasuresSlice';
 import { familiesSlice } from './families/familiesSlice';
+import { subfamiliesSlice } from './subfamilies/subfamiliesSlice';
 
 export const store = configureStore({  
     reducer: {
@@ -17,5 +18,6 @@ export const store = configureStore({
         items: itemsSlice.reducer,
         unitMeasures: unitMeasuresSlice.reducer,
         families: familiesSlice.reducer,
+        subfamilies: subfamiliesSlice.reducer,
     }
 });

@@ -12,6 +12,8 @@ import { Suspense } from 'react';
 import { useLoginStore } from '../../modules/login/hooks/useLoginStore';
 import { useEffect } from 'react';
 import Swal from 'sweetalert2';
+import './masterLayout.css';
+
 
 const DemoPageContent = ({ pathname }) => {
 
@@ -79,7 +81,16 @@ export const MasterLayout = (props) => {
 
         if (message !== undefined) {
 
-            Swal.fire(`${message.title}`, `${message.text}`, `${message.icon}`)
+            Swal.fire({
+                title:`${message.title}`, 
+                text:`${message.text}`, 
+                icon:`${message.icon}`,
+                target: document.body,
+                customClass: {
+                    container: 'my-swal-container',
+                    popup: 'my-swal-popup'
+                }
+            })
 
         }
 

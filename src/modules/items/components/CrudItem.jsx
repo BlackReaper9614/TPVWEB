@@ -5,6 +5,7 @@ import * as yup from "yup";
 import { useUnitMeasures } from '../../unitMeasures/hooks/useUnitMeasures';
 import { useEffect } from 'react';
 import { useFamiliesStore } from '../../families/hooks/useFamiliesStore';
+import { useSubfamiliesStore } from '../../subfamilies/hooks/useSubfamiliesStore';
 
 export const CrudItem = ({ open, handleClose }) => {
 
@@ -20,22 +21,33 @@ export const CrudItem = ({ open, handleClose }) => {
         resolver: yupResolver(itemsSchema),
     });
 
-    const { startLoadingUnitMeasures, unitMeasuresList  } = useUnitMeasures()
+    const { startLoadingUnitMeasures, unitMeasuresList } = useUnitMeasures()
 
     useEffect(() => {
-      
+
         startLoadingUnitMeasures();
 
-    }, [] );
+    }, []);
 
     const { startLoadingFamilies, familiesList } = useFamiliesStore();
 
     useEffect(() => {
-      
+
         startLoadingFamilies();
 
-    }, [] );
-    
+    }, []);
+
+
+    const { startLoadingSubfamiliesByFamily, subfamiliesList } = useSubfamiliesStore();
+
+    const onChangeItemFamily = async (event) => {
+
+        const selectedFamily = event.target.value;
+
+        startLoadingSubfamiliesByFamily(selectedFamily);
+
+    }
+
     const onSubmitItemsForm = () => {
 
     };
@@ -203,6 +215,7 @@ export const CrudItem = ({ open, handleClose }) => {
                             variant='outlined'
                         />
 
+                        {/* Unidades de medida */}
                         <FormControl
                             fullWidth={true}
                             sx={{
@@ -249,12 +262,13 @@ export const CrudItem = ({ open, handleClose }) => {
 
                         </FormControl>
 
+                        {/* Familias */}
                         <FormControl
                             fullWidth={true}
                             sx={{
                                 mb: '2%'
                             }}
-                            error={errors.idUnitMeasure}
+                            error={errors.idFamily}
                         >
 
                             <InputLabel id="labelFamilies">Familia del artículo</InputLabel>
@@ -264,12 +278,16 @@ export const CrudItem = ({ open, handleClose }) => {
                                 control={control}
                                 defaultValue={0}
                                 render={({ field }) => (
-                                    
+
                                     <Select
                                         {...field}
                                         labelid="labelFamilies"
                                         id="selectFamilies"
                                         label="Familia del artículo"
+                                        onChange={(e) => {
+                                            field.onChange(e);
+                                            onChangeItemFamily(e);
+                                        }}
                                         size="small"
                                     >
 
@@ -291,7 +309,55 @@ export const CrudItem = ({ open, handleClose }) => {
 
                                     </Select>
                                 )}
-                                
+
+                            />
+
+                        </FormControl>
+
+                        {/* Subfamilias */}
+                        <FormControl
+                            fullWidth={true}
+                            sx={{
+                                mb: '2%'
+                            }}
+                            error={errors.idSubfamily}
+                        >
+
+                            <InputLabel id="labelSubfamilies">Subfamilia del artículo</InputLabel>
+
+                            <Controller
+                                name='subfamilies'
+                                control={control}
+                                defaultValue={0}
+                                render={({ field }) => (
+
+                                    <Select
+                                        {...field}
+                                        labelid="labelSubfamilies"
+                                        id="selectSubFamilies"
+                                        label="Subfamilia del artículo"
+                                        size="small"
+                                    >
+
+                                        <MenuItem value={0}>Seleccione una subfamilia</MenuItem>
+
+                                        {
+
+                                            subfamiliesList.length > 1
+                                            &&
+                                            subfamiliesList.map(item => (
+
+                                                <MenuItem id={item.idSubfamily} value={item.idSubfamily}>
+                                                    {item.subfamilyName}
+                                                </MenuItem>
+
+                                            ))
+
+                                        }
+
+                                    </Select>
+                                )}
+
                             />
 
                         </FormControl>

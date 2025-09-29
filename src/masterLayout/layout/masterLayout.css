@@ -1,0 +1,9 @@
+.my-swal-container {
+    inset: 0 !important;
+    position: fixed;
+    z-index: 5000 !important;
+}
+
+.my-swal-popup {
+    z-index: 5001 !important;
+}
